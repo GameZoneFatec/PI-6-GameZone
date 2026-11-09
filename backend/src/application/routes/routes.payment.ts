@@ -1,3 +1,4 @@
+import { authMiddleware } from '../../factories/make-auth';
 import { Router } from 'express';
 import { makeControllers } from '../../factories/make-Controllers';
 
@@ -10,7 +11,7 @@ class RoutesPayment {
     }
 
     initRoutes() {
-        this.routes.post('/', this.controller.createSubscription);
+        this.routes.post('/', authMiddleware.auth, this.controller.createSubscription);
         this.routes.post('/webhook', this.controller.webHook);
         this.routes.get('/status/:paymentId', this.controller.paymentStatus);
     }

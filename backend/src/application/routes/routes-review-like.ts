@@ -1,3 +1,4 @@
+import { authMiddleware } from '../../factories/make-auth';
 import { Router } from 'express';
 import { makeControllers } from '../../factories/make-Controllers';
 
@@ -10,8 +11,8 @@ class RoutesReviewLike {
     }
 
     initRoutes() {
-        this.routes.post('/', this.controller.create);
-        this.routes.delete('/', this.controller.delete);
+        this.routes.post('/', authMiddleware.auth, this.controller.create);
+        this.routes.delete('/', authMiddleware.auth, this.controller.delete);
     }
 }
 

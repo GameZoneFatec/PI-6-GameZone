@@ -25,6 +25,7 @@ export class LoginCreateUseCase {
             username: user.username,
             premium: user.premium,
             plan_expires_at: user.plan_expires_at,
+            role: user.role,
             token: this.token.assin(user.id),
         };
     }

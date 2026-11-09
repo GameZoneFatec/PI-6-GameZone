@@ -10,5 +10,6 @@ export type LoginResponse = {
     username: string;
     premium: boolean;
     plan_expires_at: Date | null;
+    role: 'USER' | 'ADMIN';
     token: string;
 };

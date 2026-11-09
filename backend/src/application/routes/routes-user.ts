@@ -1,16 +1,15 @@
 import { Router } from 'express';
-import { AuthMiddleware } from '../../Middleware/auth.middleware';
 import multer from 'multer';
 import multerConfig from '../../infra/config/multer/multer-config';
 import { controllers } from '../../factories/controllers';
-import { instanceToken } from '../../factories/make-auth';
+import { authMiddleware } from '../../factories/make-auth';
 import { userCreateBody, userUpdateBody } from '../../core/Entities/user-entity';
 import { ValidateRequest } from '../../Middleware/validate-body.middleware';
 
 class RoutesUser {
     public routes = Router();
     private userController = controllers.userController;
-    private auth = new AuthMiddleware(instanceToken);
+    private auth = authMiddleware;
     private upload = multer(multerConfig);
     constructor() {
         this.initRoutes();
@@ -26,11 +25,12 @@ class RoutesUser {
 
         this.routes.put(
             '/update/:userId',
+            this.auth.auth,
             this.upload.single('profile_image_url'),
             ValidateRequest.validateBody(userUpdateBody),
             this.userController.update,
         );
-        this.routes.delete('/delete/:userId', this.userController.delete);
+        this.routes.delete('/delete/:userId', this.auth.auth, this.userController.delete);
         this.routes.get('/:id', this.auth.auth, this.userController.findById);
         this.routes.get('/email/:email', this.userController.findByEmail);
         this.routes.get('/username/:username', this.userController.findByUsername);
