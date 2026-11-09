@@ -24,7 +24,8 @@ export class UserCreateUseCase {
             data.profile_image_url = `${process.env.BASE_URL}/perfil-image/${data.profile_image_url}`;
         }
         const newUser = await this.repository.create(data);
-        this.sendVerifyEmail(data, newUser.id);
+        // Envio em segundo plano: falha de e-mail não pode derrubar o cadastro (nem o processo)
+        this.sendVerifyEmail(data, newUser.id).catch((err) => console.error('[email] falha ao enviar verificação:', err?.message));
 
         return {
             id: newUser.id,

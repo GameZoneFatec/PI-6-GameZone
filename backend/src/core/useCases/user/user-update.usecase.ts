@@ -25,7 +25,9 @@ export class UserUpdateUseCase {
 
         if (data.email) {
             if (!data.premium) {
-                this.sendVerifyEmail(data.email, user?.name!, user?.id!)
+                this.sendVerifyEmail(data.email, user?.name!, user?.id!).catch((err) =>
+                    console.error('[email] falha ao enviar verificação:', err?.message),
+                );
             }
         }
 
