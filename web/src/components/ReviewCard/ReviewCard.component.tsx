@@ -10,6 +10,7 @@ import {
   LikeButton,
   LikeCount,
   PublishDate,
+  ReportButton,
   Stars,
   Title
 } from './reviewCard.style';
@@ -28,6 +29,8 @@ type ReviewCardProps = {
   likedByUser: boolean;
   onClick?: () => void;
   onToggleLike?: (reviewId: string, likedByUser: boolean) => void;
+  /** Se informado, mostra o botão "Denunciar" (não passe para a própria análise). */
+  onReport?: (reviewId: string) => void;
 };
 
 function StarRating({ rating }: { rating: number }) {
@@ -53,8 +56,14 @@ export function ReviewCard({
   avatarUrl,
   likedByUser,
   onToggleLike,
+  onReport,
   onClick
 }: ReviewCardProps) {
+  function handleReportClick(e: React.MouseEvent<HTMLButtonElement>) {
+    e.stopPropagation();
+    onReport?.(reviewId);
+  }
+
   function handleLikeClick(e: React.MouseEvent<HTMLButtonElement>) {
     e.stopPropagation();
     onToggleLike?.(reviewId, likedByUser);
@@ -99,6 +108,12 @@ export function ReviewCard({
 
         <Footer>
           <PublishDate>Publicado: {publishedDate}</PublishDate>
+
+          {onReport && (
+            <ReportButton onClick={handleReportClick} title='Denunciar análise'>
+              ⚑ Denunciar
+            </ReportButton>
+          )}
 
           <LikeButton
             onClick={handleLikeClick}

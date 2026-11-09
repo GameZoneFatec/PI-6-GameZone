@@ -8,7 +8,7 @@ O SafePlay é uma plataforma para jogadores organizarem seus jogos (Backlog, Jog
 | Pasta | O que é | Stack |
 |---|---|---|
 | [`backend/`](backend) | API REST e **worker de moderação** (consumidor do RabbitMQ) | Node.js, TypeScript, Express 5, Prisma, PostgreSQL, RabbitMQ |
-| [`web/`](web) | Site do usuário (e, em breve, o backoffice admin) | React, Vite, TypeScript |
+| [`web/`](web) | Site do usuário + **backoffice de moderação** em `/admin` (somente ADMIN) | React, Vite, TypeScript |
 | `mobile/` | App Flutter *(em desenvolvimento)* | Flutter |
 | [`docs/`](docs) | Documentação da API e da mensageria | Markdown |
 
@@ -26,7 +26,7 @@ git diff v4-semestre-backend HEAD -- backend
 ### Reaproveitado, adaptado e acrescentado
 - **Reaproveitado:** cadastro e login, lista de jogos (RAWG), status dos jogos, análises, curtidas, premium via Pix.
 - **Adaptado:** as rotas de escrita passaram a exigir JWT, o login devolve `role` e as rotas de admin são protegidas por papel.
-- **Acrescentado:** a **denúncia de análises com RabbitMQ** (ver [docs/mensageria.md](docs/mensageria.md)), a API de moderação para o backoffice ([docs/api-moderacao.md](docs/api-moderacao.md)) e os testes automatizados. *A seguir: o backoffice web e o app Flutter.*
+- **Acrescentado:** a **denúncia de análises com RabbitMQ** (ver [docs/mensageria.md](docs/mensageria.md)), a API de moderação ([docs/api-moderacao.md](docs/api-moderacao.md)), o **backoffice web** em `/admin` (indicadores, fila de análises ocultadas pelo worker, decisão manter/remover e reenvio de denúncias pendentes, com atualização automática a cada 5 s), o botão **Denunciar** nas análises e os testes automatizados. *A seguir: o app Flutter.*
 
 ## Fluxo assíncrono (R04 e R05)
 ```text

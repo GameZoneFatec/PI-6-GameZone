@@ -120,6 +120,24 @@ export const LikeButton = styled('button', {
   }
 });
 
+export const ReportButton = styled('button', {
+  marginLeft: 'auto',
+  marginRight: '10px',
+  padding: '6px 10px',
+  borderRadius: '999px',
+  background: 'transparent',
+  border: '1px solid transparent',
+  color: '#B7B7CC',
+  fontSize: '12px',
+  cursor: 'pointer',
+  transition: '0.2s',
+
+  '&:hover': {
+    color: '#e07a7a',
+    borderColor: '#e07a7a'
+  }
+});
+
 export const LikeCount = styled('span', {
   fontSize: '13px'
 });

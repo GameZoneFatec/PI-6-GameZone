@@ -7,7 +7,7 @@ import logo from '@assets/sfp_logo.svg';
 import { SearchInput } from '@components/Input/Input.component';
 import { GrGamepad, GrHomeRounded } from 'react-icons/gr';
 import { CgProfile } from 'react-icons/cg';
-import { MdOutlineWorkspacePremium } from 'react-icons/md';
+import { MdOutlineAdminPanelSettings, MdOutlineWorkspacePremium } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import useGames from '@hooks/useGames';
 import useAuth from '@hooks/useAuth';
@@ -74,27 +74,22 @@ const NavBar = () => {
             <NavItem>
               <a href='/perfil'>{<GrGamepad />}Meus Jogos</a>
             </NavItem>
-            <NavItem
-            // onClick={() => {
-            //   if (!userData?.email_verified) {
-            //     toast.warning('Confirme o email para utilizar essa função', {
-            //       style: { color: '#000', fontWeight: 'bold' }
-            //     });
-            //     return;
-            //   }
-
-            //   navigate('/perfil');
-            // }}
-            >
-              {userData?.premium === false && (
-                <NavItem>
-                  <a href='/premium'>
-                    <MdOutlineWorkspacePremium />
-                    Area Premium
-                  </a>
-                </NavItem>
-              )}
-            </NavItem>
+            {userData?.premium === false && (
+              <NavItem>
+                <a href='/premium'>
+                  <MdOutlineWorkspacePremium />
+                  Area Premium
+                </a>
+              </NavItem>
+            )}
+            {userData?.role === 'ADMIN' && (
+              <NavItem>
+                <a href='/admin'>
+                  <MdOutlineAdminPanelSettings />
+                  Moderação
+                </a>
+              </NavItem>
+            )}
             <NavItem>
               <CgProfile />
               <p>Perfil</p>

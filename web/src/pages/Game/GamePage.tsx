@@ -26,6 +26,7 @@ import useReview from '@hooks/useReview';
 import type { ICreateReview, IReviewResponse } from '@interfaces/review.interface';
 import { ReviewModal, type responseReview, type ReviewStatus } from '@components/Modal/reviewModal/reviewModal';
 import { toast } from 'react-toastify';
+import { ReportModal } from '@components/Modal/reportModal/ReportModal';
 
 const GamePage = () => {
   const param = useParams();
@@ -48,6 +49,7 @@ const GamePage = () => {
   const [ReviewModalOpen, setReviewModalOpen] = useState(false);
   const [selectReview, setSelectReview] = useState<Partial<responseReview | null>>(null);
   const [canEditReview, setCanEditReview] = useState(false);
+  const [reportTarget, setReportTarget] = useState<{ id: string; title: string } | null>(null);
   const isEmailVerified = !!userData?.email_verified;
 
   function ensureEmailVerified() {
@@ -359,8 +361,16 @@ const GamePage = () => {
                         openReviewModal(review);
                       }}
                       onToggleLike={(reviewId, like) => likedAndRemoveLike(like, reviewId)}
+                      onReport={
+                        userData && review.author.id !== userData.id
+                          ? () => setReportTarget({ id: review.reviewId, title: review.title })
+                          : undefined
+                      }
                     />
                   ))}
+                  {reportTarget && (
+                    <ReportModal reviewId={reportTarget.id} reviewTitle={reportTarget.title} onClose={() => setReportTarget(null)} />
+                  )}
 
                   <div className='review-pagination'>
                     <button disabled={page === 1} onClick={() => setPage((prev) => prev - 1)}>

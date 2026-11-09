@@ -8,6 +8,8 @@ import PremiumPaymentPage from '@pages/PremiumPayment/PremiumPaymentPage';
 import SearchResultPage from '@pages/SearchResult/SearchResultPage';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { ProtectedRoutes } from './protected.routes';
+import { AdminRoutes } from './admin.routes';
+import AdminModerationPage from '@pages/Admin/AdminModerationPage';
 
 const MainRoutes = () => {
   return (
@@ -23,6 +25,9 @@ const MainRoutes = () => {
         <Route element={<ProtectedRoutes />}>
           <Route path='/premium' element={<PremiumPaymentPage />} />
           <Route path='/perfil' element={<Perfil />} />
+        </Route>
+        <Route element={<AdminRoutes />}>
+          <Route path='/admin' element={<AdminModerationPage />} />
         </Route>
       </Route>
     </Routes>
