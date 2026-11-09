@@ -39,6 +39,8 @@ Backoffice ── GET/PATCH /admin/moderation/* (somente ADMIN)
 ```
 
 ## Como executar
+> **Para a apresentação, siga o [guia da demonstração](docs/DEMO.md)**: ele tem as contas, o roteiro e o cenário de falha.
+
 
 ### Pré-requisitos
 - Node.js 20 ou mais recente

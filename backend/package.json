@@ -11,7 +11,8 @@
         "worker:dev": "ts-node src/main/worker.ts",
         "admin:promote": "ts-node src/scripts/promote-admin.ts",
         "test": "vitest run",
-        "typecheck": "tsc --noEmit"
+        "typecheck": "tsc --noEmit",
+        "seed:demo": "ts-node src/scripts/seed-demo.ts"
     },
     "repository": {
         "type": "git",
