@@ -28,6 +28,7 @@ model User {
   userGames UserGame[]
   reviews   Review[]
   likes     ReviewLike[]
+  reports   ReviewReport[]
 }
 
 enum Role {
@@ -76,11 +77,18 @@ model Review {
   status       ReviewStatus @default(PUBLISHED)
   published_at DateTime?
 
+  // Moderação (denúncias processadas pelo worker do RabbitMQ)
+  reports_count   Int       @default(0) // denúncias abertas (já processadas e ainda não resolvidas)
+  hidden_at       DateTime?
+  moderated_at    DateTime?
+  moderated_by_id String?
+
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  author User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  likes  ReviewLike[]
+  author  User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likes   ReviewLike[]
+  reports ReviewReport[]
 
   @@unique([userId, gameId], name: "userId_rawgId")
   @@index([isPublic, status, published_at])
@@ -91,6 +99,45 @@ model Review {
 enum ReviewStatus {
   DRAFT
   PUBLISHED
+  HIDDEN // ocultada automaticamente ao atingir o limite de denúncias
+  REMOVED // removida por um administrador
+}
+
+// ------------------------------------------------------------------------------------
+
+model ReviewReport {
+  id                 String       @id @default(cuid())
+  reviewId           String
+  reporterId         String
+  reason             ReportReason
+  details            String?
+  status             ReportStatus @default(PENDING)
+  publish_attempts   Int          @default(0)
+  last_publish_error String?
+  created_at         DateTime     @default(now())
+  processed_at       DateTime?
+  resolved_at        DateTime?
+
+  review   Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  reporter User   @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+
+  @@unique([reviewId, reporterId], name: "review_reporter_unique")
+  @@index([status, created_at])
+  @@index([reviewId, status])
+}
+
+enum ReportReason {
+  OFFENSIVE
+  SPAM
+  SPOILER
+  OTHER
+}
+
+enum ReportStatus {
+  PENDING // salva no banco, aguardando o worker
+  PROCESSED // contabilizada pelo worker
+  ACCEPTED // admin removeu a análise
+  DISMISSED // admin manteve a análise
 }
 
 model ReviewLike {

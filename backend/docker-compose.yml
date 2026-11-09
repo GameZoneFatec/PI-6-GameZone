@@ -1,23 +1,46 @@
 services:
   app:
     build:
-      context: .          
+      context: .
     image: pi-backend
-    container_name: pi4
+    container_name: safeplay-api
     depends_on:
       db:
         condition: service_healthy
-    environment:
-      BASE_URL: "http://localhost:${PORT}"
+      rabbitmq:
+        condition: service_healthy
     env_file:
       - .env
+    environment:
+      BASE_URL: "http://localhost:${PORT}"
+      DATABASE_URL: "postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}?schema=public"
+      RABBITMQ_URL: "amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672"
     networks:
       - dev-net
     ports:
       - "3000:3000"
-      - "5555:5555"
     volumes:
       - uploads:/app/uploads
+    restart: unless-stopped
+
+  # Consumidor da fila de denúncias (mesma imagem da API, outro processo)
+  worker:
+    image: pi-backend
+    container_name: safeplay-worker
+    command: ["node", "dist/main/worker.js"]
+    depends_on:
+      app:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: "postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}?schema=public"
+      RABBITMQ_URL: "amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672"
+    networks:
+      - dev-net
+    restart: unless-stopped
 
   db:
     image: postgres:16
@@ -38,9 +61,29 @@ services:
       timeout: 3s
       retries: 10
 
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    ports:
+      - "5672:5672"   # AMQP
+      - "15672:15672" # painel de administração (http://localhost:15672)
+    volumes:
+      - rabbitdata:/var/lib/rabbitmq
+    networks:
+      - dev-net
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
 volumes:
   pgdata:
   uploads:
+  rabbitdata:
 
 networks:
   dev-net:

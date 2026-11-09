@@ -12,6 +12,10 @@ export class ReviewUpdateUsecase {
 
         const reviewE = await this.repository.reviewById(review.id);
         if (!reviewE) throw new ErrorNotFound('Review não encontrada/cadastrada');
+        // Análise em moderação/removida não pode ser republicada pelo autor
+        if (reviewE.status === 'HIDDEN' || reviewE.status === 'REMOVED') {
+            throw new ErroBusinessRules(null, 'Esta análise está em moderação e não pode ser alterada');
+        }
 
         if (!reviewE.published_at) {
             if (review.status == 'PUBLISHED') {

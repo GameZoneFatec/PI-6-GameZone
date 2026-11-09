@@ -49,6 +49,22 @@ import { UserDeleteUsecase } from '../core/useCases/user/user-delete.usecase';
 import { reviewGetByUserIdAndGameId } from '../core/useCases/review/review-get-by-userId-and-gameId.usecase';
 import { CreateFavoriteUsecase } from '../core/useCases/userGame/userGame-createFavorite';
 import { getPaymentStatus } from '../core/useCases/payment/get-payment-status.usecase';
+import { ReviewReportRepoPrisma } from '../infra/Repositories/prisma/Repositories/review-report-repo.prisma';
+import { RabbitMQPublisher } from '../infra/messaging/rabbitmq-publisher';
+import { ReviewReportCreateUsecase } from '../core/useCases/reviewReport/review-report-create.usecase';
+import { ReviewReportController } from '../controllers/review-report-controller';
+import {
+    ModerationDecideUsecase,
+    ModerationListReportsUsecase,
+    ModerationQueueUsecase,
+    ModerationRepublishPendingUsecase,
+    ModerationStatsUsecase,
+} from '../core/useCases/moderation/moderation.usecases';
+import { AdminModerationController } from '../controllers/admin-moderation-controller';
+import { reportThreshold } from '../infra/config/moderation-config';
+
+// Uma única conexão com o RabbitMQ para toda a API (makeControllers é chamado por várias rotas)
+export const messagePublisher = new RabbitMQPublisher();
 
 export function makeControllers() {
     // Repositorios
@@ -58,6 +74,7 @@ export function makeControllers() {
     const reviewRepo = new ReviwRepository(prisma);
     const reviewLikeRepo = new ReviewLikeRepository();
     const paymentRepo = new PaymentRepo();
+    const reviewReportRepo = new ReviewReportRepoPrisma(prisma);
 
     // Adapters
     const email = new nodemailerImpl();
@@ -105,6 +122,13 @@ export function makeControllers() {
     const CreatePaymentUsecase = new CreatePayment(paymentRepo);
     const webhook = new webhookUsecase(Subscribe, paymentRepo);
     const get = new getPaymentStatus(paymentRepo);
+    // Denúncias e moderação
+    const reviewReportCreate = new ReviewReportCreateUsecase(reviewReportRepo, reviewRepo, messagePublisher);
+    const moderationQueue = new ModerationQueueUsecase(reviewReportRepo);
+    const moderationDecide = new ModerationDecideUsecase(reviewReportRepo);
+    const moderationListReports = new ModerationListReportsUsecase(reviewReportRepo);
+    const moderationRepublish = new ModerationRepublishPendingUsecase(reviewReportRepo, messagePublisher);
+    const moderationStats = new ModerationStatsUsecase(reviewReportRepo, reportThreshold());
     // Auth
     const Auth = new AuthVerifyEmailUsecase(instanceToken, verifyUser, userRepo, sendEmail);
 
@@ -133,6 +157,14 @@ export function makeControllers() {
     const paymentController = new PaymentController(CreatePaymentUsecase, webhook, get);
     const authController = new AuthController(Auth);
     const teste = new TesteController(Subscribe);
+    const reviewReportController = new ReviewReportController(reviewReportCreate);
+    const adminModerationController = new AdminModerationController(
+        moderationQueue,
+        moderationDecide,
+        moderationListReports,
+        moderationRepublish,
+        moderationStats,
+    );
 
     return {
         userController,
@@ -144,5 +176,7 @@ export function makeControllers() {
         paymentController,
         authController,
         teste,
+        reviewReportController,
+        adminModerationController,
     };
 }

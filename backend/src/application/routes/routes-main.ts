@@ -8,6 +8,7 @@ import routesReviewLike from './routes-review-like';
 import routesPayment from './routes.payment';
 import routesAuth from './routes-auth';
 import routesTest from './routes-test';
+import routesAdmin from './routes-admin';
 
 class MainRoutes {
     public routes = Router();
@@ -26,6 +27,7 @@ class MainRoutes {
         this.routes.use('/payment', routesPayment);
         this.routes.use('/auth', routesAuth);
         this.routes.use('/teste', routesTest);
+        this.routes.use('/admin', routesAdmin);
     }
 }
 

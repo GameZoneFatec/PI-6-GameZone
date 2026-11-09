@@ -6,7 +6,12 @@
     "scripts": {
         "dev": "nodemon",
         "build": "tsc",
-        "start": "node dist/main/server.js"
+        "start": "node dist/main/server.js",
+        "worker": "node dist/main/worker.js",
+        "worker:dev": "ts-node src/main/worker.ts",
+        "admin:promote": "ts-node src/scripts/promote-admin.ts",
+        "test": "vitest run",
+        "typecheck": "tsc --noEmit"
     },
     "repository": {
         "type": "git",
@@ -22,6 +27,7 @@
     "homepage": "https://github.com/Rapha-Reiis/projeto-integrador-4-semestre-backend#readme",
     "dependencies": {
         "@prisma/client": "^6.16.1",
+        "amqplib": "^2.3.1",
         "bcryptjs": "^3.0.2",
         "cors": "^2.8.5",
         "dotenv": "^17.2.1",
@@ -53,6 +59,7 @@
         "prisma": "^6.16.1",
         "ts-node": "^10.9.2",
         "typescript": "^5.9.3",
-        "typescript-eslint": "^8.43.0"
+        "typescript-eslint": "^8.43.0",
+        "vitest": "^5.1.0"
     }
 }
