@@ -20,7 +20,8 @@ import { reportThreshold } from '../infra/config/moderation-config';
  *  - Erro inesperado (ex.: banco fora) → 1ª vez volta para a fila após RETRY_DELAY_MS;
  *    se falhar de novo → DLQ. A denúncia continua PENDING no banco e pode ser
  *    republicada pelo backoffice (POST /admin/moderation/reports/republish).
- *  - Conexão com o broker caiu → o processo encerra com código 1 (o Docker reinicia).
+ *  - Conexão com o broker caiu → o worker reconecta sozinho a cada 5s; mensagens
+ *    sem ack voltam para a fila e são entregues de novo (processamento idempotente).
  */
 const RETRY_DELAY_MS = Number(process.env.WORKER_RETRY_DELAY_MS ?? 5000);
 const CONNECT_RETRY_MS = 5000;
@@ -38,12 +39,18 @@ async function connectWithRetry() {
     }
 }
 
-async function main() {
-    await prisma.$connect();
+let current: Awaited<ReturnType<typeof amqp.connect>> | null = null;
+let shuttingDown = false;
+
+async function start() {
     const connection = await connectWithRetry();
+    current = connection;
     connection.on('close', () => {
-        console.error('[worker] conexão com o RabbitMQ encerrada; finalizando para reiniciar');
-        process.exit(1);
+        current = null;
+        if (shuttingDown) return;
+        // A mensagem em processamento sem ack volta para a fila; nada se perde.
+        console.error(`[worker] conexão com o RabbitMQ encerrada; reconectando em ${CONNECT_RETRY_MS / 1000}s`);
+        setTimeout(() => start().catch((err) => console.error('[worker] falha ao reconectar:', err.message)), CONNECT_RETRY_MS);
     });
     connection.on('error', (err) => console.error('[worker] erro na conexão:', err.message));
 
@@ -73,11 +80,16 @@ async function main() {
             }
         }
     });
+}
+
+async function main() {
+    await prisma.$connect();
+    await start();
 
     const shutdown = async () => {
         console.log('[worker] encerrando...');
-        connection.removeAllListeners('close');
-        await connection.close().catch(() => undefined);
+        shuttingDown = true;
+        await current?.close().catch(() => undefined);
         await prisma.$disconnect();
         process.exit(0);
     };
