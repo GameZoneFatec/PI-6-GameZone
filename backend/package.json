@@ -12,7 +12,8 @@
         "admin:promote": "ts-node src/scripts/promote-admin.ts",
         "test": "vitest run",
         "typecheck": "tsc --noEmit",
-        "seed:demo": "ts-node src/scripts/seed-demo.ts"
+        "seed:demo": "ts-node src/scripts/seed-demo.ts",
+        "demo:report": "ts-node src/scripts/demo-report.ts"
     },
     "repository": {
         "type": "git",
