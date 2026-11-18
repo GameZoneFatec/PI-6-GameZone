@@ -6,6 +6,7 @@ import { authMiddleware } from '../../factories/make-auth';
 class RoutesAdmin {
     public routes = Router();
     private controller = controllers.adminModerationController;
+    private games = controllers.adminGameController;
 
     constructor() {
         this.routes.use(authMiddleware.auth, authMiddleware.admin);
@@ -18,6 +19,12 @@ class RoutesAdmin {
         this.routes.patch('/moderation/reviews/:reviewId', this.controller.decide);
         this.routes.get('/moderation/reports', this.controller.reports);
         this.routes.post('/moderation/reports/republish', this.controller.republishPending);
+
+        // Catálogo de jogos (API própria de jogos)
+        this.routes.get('/games', this.games.list);
+        this.routes.post('/games', this.games.create);
+        this.routes.put('/games/:id', this.games.update);
+        this.routes.delete('/games/:id', this.games.remove);
     }
 }
 

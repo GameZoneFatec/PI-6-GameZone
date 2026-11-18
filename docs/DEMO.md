@@ -11,7 +11,7 @@ O passo a passo para preparar o ambiente e apresentar à banca. O tempo total é
    npm --prefix backend install
    npm --prefix web install
    ```
-3. Crie o `backend/.env` a partir do `backend/env.example`. Peça os valores reais a quem administra o projeto: as URLs do **Neon** e do **CloudAMQP**, a chave da **RAWG** e as senhas das contas de demonstração. **Nunca faça commit desse arquivo.**
+3. Crie o `backend/.env` a partir do `backend/env.example`. Peça os valores reais a quem administra o projeto: as URLs do **Neon** e do **CloudAMQP** e as senhas das contas de demonstração. **Nunca faça commit desse arquivo.**
 4. Aplique as migrations no banco. Só é preciso na primeira vez ou quando houver migration nova:
    ```bash
    npm --prefix backend exec prisma migrate deploy
@@ -41,7 +41,7 @@ Deixe abertos:
 | Admin | `admin@safeplay.demo` | em `DEMO_ADMIN_PASSWORD` no `backend/.env` |
 | Jogador (usuário comum, premium) | `jogador@safeplay.demo` | em `DEMO_USER_PASSWORD` no `backend/.env` |
 
-O `seed:demo` também cria três usuários da "comunidade": `troll_gamer`, `ana_jogadora` e `pedro_speedrun`. Ninguém faz login com eles. No jogo **GTA V** (id 3498), ele cria duas análises:
+O `seed:demo` também cria três usuários da "comunidade": `troll_gamer`, `ana_jogadora` e `pedro_speedrun`. Ninguém faz login com eles. Ele também carrega o **catálogo de jogos** (36 jogos, sem precisar de internet) e, no jogo **Grand Theft Auto V**, cria duas análises:
 - "Mundo aberto incrível", uma análise normal;
 - "Jogo lixo, quem gosta é burro", uma análise ofensiva que **já tem 2 de 3 denúncias**.
 
@@ -70,7 +70,6 @@ O `seed:demo` também cria três usuários da "comunidade": `troll_gamer`, `ana_
 
 ## Checklist de véspera
 - [ ] `npm --prefix backend run seed:demo` executado
-- [ ] A chave da **RAWG** está no `.env`. Sem ela, a página do jogo não carrega
 - [ ] Os dois logins (Admin e Jogador) foram testados
-- [ ] A internet do local foi testada. Neon, CloudAMQP e RAWG estão na nuvem; leve um roteador do celular como reserva
+- [ ] A internet do local foi testada. Neon e CloudAMQP estão na nuvem; leve um roteador do celular como reserva
 - [ ] O ensaio coube em até 30 minutos

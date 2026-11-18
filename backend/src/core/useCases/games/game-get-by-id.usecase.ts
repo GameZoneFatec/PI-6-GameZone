@@ -9,9 +9,10 @@ export class GameGetByIdUseCase {
         private userGameRepo: IUserGameRepository,
     ) {}
 
-    async execute(rawgId: string, userId: string) {
-        const games = await this.repository.getById(rawgId);
-        const userGame = await this.userGameRepo.UserGameByUserId(Number(rawgId), userId);
+    async execute(gameId: string, userId?: string) {
+        const games = await this.repository.getById(gameId);
+        // Sem usuário (visitante ou app sem login) só devolve o jogo
+        const userGame = userId ? await this.userGameRepo.UserGameByUserId(Number(gameId), userId) : null;
         let status = null;
         let userGameId = null;
         if (userGame) {

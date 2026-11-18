@@ -37,6 +37,37 @@ enum Role {
 }
 
 // -------------------------------------------------
+// Catálogo PRÓPRIO de jogos (substitui a RAWG). Povoado uma vez a partir da loja da
+// Steam (npm run games:import) e mantido pelo backoffice. As imagens ficam em
+// backend/media (catálogo) e backend/uploads/media (enviadas pelo admin).
+
+model Game {
+  id                Int       @id @default(autoincrement())
+  name              String
+  slug              String    @unique
+  short_description String?
+  description       String?
+  released          DateTime? @db.Date
+  metacritic        Int?
+  developers        String[]
+  publishers        String[]
+  genres            String[]
+  platforms         String[]
+  cover_image       String? // caminho relativo, ex.: games/grand-theft-auto-v/header.jpg
+  screenshots       String[]
+  website           String?
+  steam_appid       Int?      @unique // origem da importação (null = cadastrado pelo admin)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  userGames UserGame[]
+  reviews   Review[]
+
+  @@index([name])
+}
+
+// -------------------------------------------------
 
 model UserGame {
   id        String     @id @default(cuid())
@@ -50,6 +81,7 @@ model UserGame {
   updated_at DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game Game @relation(fields: [gameId], references: [id], onDelete: Restrict)
 
   @@unique([userId, gameId])
   @@index([userId, status])
@@ -87,6 +119,7 @@ model Review {
   updated_at DateTime @updatedAt
 
   author  User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game    Game           @relation(fields: [gameId], references: [id], onDelete: Restrict)
   likes   ReviewLike[]
   reports ReviewReport[]
 

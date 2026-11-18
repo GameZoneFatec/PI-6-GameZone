@@ -11,7 +11,7 @@ export class UserGameRepoPrisma implements IUserGameRepository {
     async createUserProfile(profile: ProfileCreateDTO): Promise<any> {
         const gameId = Number(profile.gameId);
         const data: Prisma.UserGameCreateInput = {
-            gameId: gameId,
+            game: { connect: { id: gameId } },
             status: profile.status,
             user: {
                 connect: { id: profile.userId },

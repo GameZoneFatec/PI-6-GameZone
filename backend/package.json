@@ -13,7 +13,9 @@
         "test": "vitest run",
         "typecheck": "tsc --noEmit",
         "seed:demo": "ts-node src/scripts/seed-demo.ts",
-        "demo:report": "ts-node src/scripts/demo-report.ts"
+        "demo:report": "ts-node src/scripts/demo-report.ts",
+        "games:import": "ts-node src/scripts/games-import-steam.ts",
+        "games:load": "ts-node src/scripts/games-load.ts"
     },
     "repository": {
         "type": "git",

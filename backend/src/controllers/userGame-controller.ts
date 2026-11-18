@@ -36,11 +36,11 @@ export class UserGameController {
 
     createProfile = async (req: Request, res: Response) => {
         if (!req.body) throw new ErrorBadRequest('Não foi passado o body corretamente');
-        const { userId, gameId, status, note } = req.body;
+        const { gameId, status, note } = req.body;
 
         const profileCreate: ProfileCreateDTO = {
             gameId: gameId,
-            userId: userId,
+            userId: req.user!.id, // sempre o usuário do token (antes vinha do corpo e permitia alterar a biblioteca de outro)
             status: status,
             note: note,
         };

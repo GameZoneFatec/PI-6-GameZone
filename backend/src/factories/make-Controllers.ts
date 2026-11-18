@@ -1,6 +1,14 @@
 import { UserRepoPrisma } from '../infra/Repositories/prisma/Repositories/user-repo-prisma';
 import { prisma } from '../infra/Repositories/prisma/client';
-import { RawgRepostiry } from '../infra/Repositories/Games/rawg-repository';
+import { GameRepoPrisma } from '../infra/Repositories/prisma/Repositories/game-repo.prisma';
+import { LocalMediaStorage } from '../infra/storage/local-media-storage';
+import {
+    GameAdminCreateUsecase,
+    GameAdminDeleteUsecase,
+    GameAdminListUsecase,
+    GameAdminUpdateUsecase,
+} from '../core/useCases/games/game-admin.usecases';
+import { AdminGameController } from '../controllers/admin-game-controller';
 import { HashBcrypt } from '../infra/hash-bycript';
 import { UserCreateUseCase } from '../core/useCases/user/user-create.usecase';
 import { UserUpdateUseCase } from '../core/useCases/user/user-update.usecase';
@@ -69,7 +77,7 @@ export const messagePublisher = new RabbitMQPublisher();
 export function makeControllers() {
     // Repositorios
     const userRepo = new UserRepoPrisma(prisma);
-    const gameRepo = new RawgRepostiry();
+    const gameRepo = new GameRepoPrisma(prisma); // catálogo próprio (antes: RAWG)
     const userGameRepo = new UserGameRepoPrisma(gameRepo);
     const reviewRepo = new ReviwRepository(prisma);
     const reviewLikeRepo = new ReviewLikeRepository();
@@ -129,6 +137,12 @@ export function makeControllers() {
     const moderationListReports = new ModerationListReportsUsecase(reviewReportRepo);
     const moderationRepublish = new ModerationRepublishPendingUsecase(reviewReportRepo, messagePublisher);
     const moderationStats = new ModerationStatsUsecase(reviewReportRepo, reportThreshold());
+    // Catálogo de jogos (backoffice)
+    const mediaStorage = new LocalMediaStorage();
+    const gameAdminList = new GameAdminListUsecase(gameRepo);
+    const gameAdminCreate = new GameAdminCreateUsecase(gameRepo, mediaStorage);
+    const gameAdminUpdate = new GameAdminUpdateUsecase(gameRepo, mediaStorage);
+    const gameAdminDelete = new GameAdminDeleteUsecase(gameRepo, mediaStorage);
     // Auth
     const Auth = new AuthVerifyEmailUsecase(instanceToken, verifyUser, userRepo, sendEmail);
 
@@ -166,6 +180,8 @@ export function makeControllers() {
         moderationStats,
     );
 
+    const adminGameController = new AdminGameController(gameAdminList, gameAdminCreate, gameAdminUpdate, gameAdminDelete);
+
     return {
         userController,
         gameController,
@@ -178,5 +194,6 @@ export function makeControllers() {
         teste,
         reviewReportController,
         adminModerationController,
+        adminGameController,
     };
 }

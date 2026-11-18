@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { randomBytes } from 'node:crypto';
 import { prisma } from '../infra/Repositories/prisma/client';
 import { HashBcrypt } from '../infra/hash-bycript';
+import { loadCatalog } from './lib/game-catalog';
 
 /**
  * Prepara o banco para a APRESENTAÇÃO. Pode ser executado quantas vezes quiser:
@@ -16,7 +17,7 @@ import { HashBcrypt } from '../infra/hash-bycript';
  *    processadas. Na demo, a denúncia do Jogador é a 3ª → o worker oculta a análise
  *    → ela aparece no backoffice.
  */
-const DEMO_GAME_ID = Number(process.env.DEMO_GAME_ID ?? 3498); // Grand Theft Auto V na RAWG
+const DEMO_STEAM_APPID = 271590; // Grand Theft Auto V (jogo onde ficam as análises da demo)
 const hash = new HashBcrypt();
 
 function required(name: string): string {
@@ -41,6 +42,14 @@ async function upsertUser(data: { email: string; username: string; name: string;
 }
 
 async function main() {
+    // 0. Catálogo de jogos (a partir de prisma/data/games.json, sem internet)
+    const catalog = await loadCatalog(prisma);
+    const demoGame =
+        (await prisma.game.findUnique({ where: { steam_appid: DEMO_STEAM_APPID } })) ??
+        (await prisma.game.findFirst({ orderBy: { metacritic: { sort: 'desc', nulls: 'last' } } }));
+    if (!demoGame) throw new Error('Catálogo vazio: rode npm run games:import');
+    const DEMO_GAME_ID = demoGame.id;
+
     // 1. Remove os usuários de teste automatizado (demo.*@example.com) e tudo que eles criaram
     const cleaned = await prisma.user.deleteMany({ where: { email: { startsWith: 'demo.', endsWith: '@example.com' } } });
 
@@ -127,10 +136,11 @@ async function main() {
     });
 
     console.log('Banco pronto para a demonstração:');
+    console.log(`  - ${catalog.total} jogos no catálogo`);
     console.log(`  - ${cleaned.count} usuário(s) de teste removidos`);
     console.log(`  - Admin:   ${admin.email} (role ADMIN)`);
     console.log(`  - Jogador: ${jogador.email} (usuário comum, premium)`);
-    console.log(`  - Análise ofensiva "${offensive.title}" no jogo ${DEMO_GAME_ID} com 2/3 denúncias`);
+    console.log(`  - Análise ofensiva "${offensive.title}" no jogo "${demoGame.name}" (id ${DEMO_GAME_ID}) com 2/3 denúncias`);
     console.log('  As senhas estão no backend/.env (DEMO_ADMIN_PASSWORD / DEMO_USER_PASSWORD).');
 }
 

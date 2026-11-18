@@ -94,3 +94,59 @@ export interface GamesTrailers {
         max: string;
     };
 }
+
+// ------------------------------------------------
+// Catálogo próprio (tabela Game)
+
+/** Jogo como está gravado no banco (imagens com caminho relativo à pasta de mídia). */
+export interface GameRecord {
+    id: number;
+    name: string;
+    slug: string;
+    short_description: string | null;
+    description: string | null;
+    released: Date | null;
+    metacritic: number | null;
+    developers: string[];
+    publishers: string[];
+    genres: string[];
+    platforms: string[];
+    cover_image: string | null;
+    screenshots: string[];
+    website: string | null;
+    steam_appid: number | null;
+    created_at: Date;
+    updated_at: Date;
+}
+
+/** Dados que o administrador envia para criar/editar um jogo (já validados). */
+export interface GameData {
+    name: string;
+    slug: string;
+    short_description: string | null;
+    description: string | null;
+    released: Date | null;
+    metacritic: number | null;
+    developers: string[];
+    publishers: string[];
+    genres: string[];
+    platforms: string[];
+    website: string | null;
+    cover_image?: string | null;
+}
+
+export interface GameAdminItem extends GameRecord {
+    cover_url: string | null;
+    reviews_count: number;
+    library_count: number;
+}
+
+export function slugify(text: string): string {
+    return text
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 80);
+}

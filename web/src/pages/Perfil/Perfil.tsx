@@ -193,10 +193,10 @@ export default function Perfil() {
 
                 <FavoriteCard>
                   <FavoriteImage
-                    onClick={() => navigate(`/game/${userData?.favorite_GameId ?? 3328}`)}
+                    onClick={() => navigate(userData?.favorite_GameId ? `/game/${userData.favorite_GameId}` : '/home')}
                     src={
                       userData?.favorite_url ??
-                      'https://media.rawg.io/media/games/618/618c2031a07bbff6b4f611f10b6bcdbc.jpg'
+                      `${import.meta.env.VITE_BASE_URL}/media/games/the-witcher-3-wild-hunt/header.jpg`
                     }
                   />
 

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { toast } from 'react-toastify';
 import handleAxiosErrors from '@utils/axiosErrorStandard';
 import { moderationService } from '@services/moderation.service';
@@ -50,7 +51,8 @@ export function ReportModal({ reviewId, reviewTitle, onClose }: Props) {
     }
   }
 
-  return (
+  // Portal: a página do jogo usa filter no container, o que prenderia o position:fixed do modal
+  return createPortal(
     <Backdrop onClick={onClose}>
       <ModalCard onClick={(e) => e.stopPropagation()} role='dialog' aria-modal='true' aria-labelledby='report-title'>
         <ModalHeader>
@@ -98,6 +100,7 @@ export function ReportModal({ reviewId, reviewTitle, onClose }: Props) {
           </SaveButton>
         </ModalFooter>
       </ModalCard>
-    </Backdrop>
+    </Backdrop>,
+    document.body
   );
 }

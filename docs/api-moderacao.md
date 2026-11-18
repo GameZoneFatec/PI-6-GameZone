@@ -55,7 +55,7 @@ A fila de moderação. `status`: `HIDDEN` (padrão; análises que o worker ocult
 ```json
 [
   {
-    "reviewId": "cm2z...", "gameId": 3498, "title": "...", "body": "...", "rating": 1,
+    "reviewId": "cm2z...", "gameId": 1, "title": "...", "body": "...", "rating": 1,
     "status": "HIDDEN", "reports_count": 3, "hidden_at": "2026-11-09T17:05:00.000Z",
     "author": { "id": "...", "username": "fulano" },
     "reports": [

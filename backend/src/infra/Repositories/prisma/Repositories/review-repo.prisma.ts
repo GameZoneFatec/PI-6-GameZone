@@ -20,7 +20,7 @@ export class ReviwRepository implements IReviewRepository {
         try {
             const data: Prisma.ReviewCreateInput = {
                 author: { connect: { id: userGame.userId } },
-                gameId: Number(userGame.gameId),
+                game: { connect: { id: Number(userGame.gameId) } },
                 title: userGame.title,
                 body: userGame.body ?? null,
                 rating: userGame.rating,
