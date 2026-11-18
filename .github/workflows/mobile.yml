@@ -1,0 +1,43 @@
+name: App Flutter
+
+# Compila o app a cada push que mexe em mobile/: análise estática, testes e APK para instalar no celular.
+on:
+  push:
+    paths: ['mobile/**', '.github/workflows/mobile.yml']
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      # Gera só os arquivos de plataforma que faltam (não sobrescreve lib/, test/ nem o AndroidManifest)
+      - name: Gerar arquivos de plataforma
+        run: flutter create . --org br.fatec.safeplay --project-name safeplay_mobile --platforms android,web
+
+      - run: flutter pub get
+      - run: flutter analyze --no-fatal-infos
+      - run: flutter test
+
+      - name: Gerar APK
+        run: flutter build apk --release --dart-define=API_URL=${{ vars.SAFEPLAY_API_URL || 'http://192.168.0.10:3000' }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: safeplay-apk
+          path: mobile/build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 14

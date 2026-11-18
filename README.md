@@ -9,7 +9,7 @@ O SafePlay é uma plataforma para jogadores organizarem seus jogos (Backlog, Jog
 |---|---|---|
 | [`backend/`](backend) | API REST e **worker de moderação** (consumidor do RabbitMQ) | Node.js, TypeScript, Express 5, Prisma, PostgreSQL, RabbitMQ |
 | [`web/`](web) | Site do usuário + **backoffice de moderação** em `/admin` (somente ADMIN) | React, Vite, TypeScript |
-| `mobile/` | App Flutter *(em desenvolvimento)* | Flutter |
+| [`mobile/`](mobile) | App do jogador: catálogo, biblioteca e **denúncia de análises** | Flutter (Dart) |
 | [`docs/`](docs) | Documentação da API e da mensageria | Markdown |
 
 ## Origem: projeto do 4º semestre (R01)
@@ -27,7 +27,7 @@ git diff v4-semestre-backend HEAD -- backend
 - **Reaproveitado:** cadastro e login, status dos jogos (biblioteca), análises, curtidas, premium via Pix.
 - **Substituído:** a lista de jogos vinha da API externa RAWG. Agora é uma **API própria de jogos** com catálogo no nosso banco (ver [docs/api-jogos.md](docs/api-jogos.md)).
 - **Adaptado:** as rotas de escrita passaram a exigir JWT, o login devolve `role` e as rotas de admin são protegidas por papel.
-- **Acrescentado:** a **denúncia de análises com RabbitMQ** (ver [docs/mensageria.md](docs/mensageria.md)), a API de moderação ([docs/api-moderacao.md](docs/api-moderacao.md)), o **backoffice web** em `/admin` (indicadores, fila de análises ocultadas pelo worker, decisão manter/remover e reenvio de denúncias pendentes, com atualização automática a cada 5 s), o botão **Denunciar** nas análises, o **catálogo próprio de jogos** (36 jogos importados uma única vez da loja da Steam, com CRUD pelo admin) e os testes automatizados. *A seguir: o app Flutter.*
+- **Acrescentado:** a **denúncia de análises com RabbitMQ** (ver [docs/mensageria.md](docs/mensageria.md)), a API de moderação ([docs/api-moderacao.md](docs/api-moderacao.md)), o **backoffice web** em `/admin` (indicadores, fila de análises ocultadas pelo worker, decisão manter/remover e reenvio de denúncias pendentes, com atualização automática a cada 5 s), o botão **Denunciar** nas análises, o **catálogo próprio de jogos** (36 jogos importados uma única vez da loja da Steam, com CRUD pelo admin) e os testes automatizados. O **app Flutter** ([mobile/README.md](mobile/README.md)) usa a mesma API: o jogador gerencia a biblioteca e denuncia análises pelo celular.
 
 ## Fluxo assíncrono (R04 e R05)
 ```text
