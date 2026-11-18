@@ -86,7 +86,7 @@ const NavBar = () => {
               <NavItem>
                 <a href='/admin'>
                   <MdOutlineAdminPanelSettings />
-                  Moderação
+                  Backoffice
                 </a>
               </NavItem>
             )}

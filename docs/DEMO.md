@@ -54,7 +54,8 @@ O `seed:demo` também cria três usuários da "comunidade": `troll_gamer`, `ana_
 | 4 | Recarregue a página do jogo | A análise ofensiva sumiu | R04 (efeito observável) |
 | 5 | No navegador do Admin (`/admin`) | Ela aparece em "Aguardando decisão" em até 5 segundos, com as 3 denúncias | R05 |
 | 6 | Clique em **Remover análise** | O contador "Análises removidas" sobe | R05 (operação administrativa) |
-| 7 | **No app Flutter**, mostre a mesma análise sumida e os mesmos dados | Os dados são consistentes entre as plataformas | R02 *(quando o app estiver pronto)* |
+| 7 | No backoffice, aba **Catálogo de jogos**: clique em **+ Novo jogo**, preencha nome, gêneros e capa e salve | O jogo aparece no catálogo e na home do site | R03, R05 (API própria de jogos) |
+| 8 | **No app Flutter**, mostre a mesma análise sumida e os mesmos dados | Os dados são consistentes entre as plataformas | R02 *(quando o app estiver pronto)* |
 
 ### Cenário de falha (pedido pela banca)
 1. **Pare o worker** no terminal 2 com `Ctrl+C`.

@@ -10,6 +10,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { ProtectedRoutes } from './protected.routes';
 import { AdminRoutes } from './admin.routes';
 import AdminModerationPage from '@pages/Admin/AdminModerationPage';
+import AdminGamesPage from '@pages/Admin/AdminGamesPage';
 
 const MainRoutes = () => {
   return (
@@ -28,6 +29,7 @@ const MainRoutes = () => {
         </Route>
         <Route element={<AdminRoutes />}>
           <Route path='/admin' element={<AdminModerationPage />} />
+          <Route path='/admin/jogos' element={<AdminGamesPage />} />
         </Route>
       </Route>
     </Routes>

@@ -32,6 +32,7 @@ import {
   TableScroll,
   Tabs
 } from './styles.adminModeration';
+import { AdminSectionNav } from './AdminSectionNav';
 
 type TabKey = ModerationReviewStatus | 'PENDING_REPORTS';
 
@@ -125,6 +126,7 @@ const AdminModerationPage = () => {
 
   return (
     <AdminMain>
+      <AdminSectionNav />
       <PageHeader>
         <div>
           <h1>Moderação</h1>
