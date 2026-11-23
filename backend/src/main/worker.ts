@@ -82,8 +82,21 @@ async function start() {
     });
 }
 
+/** O Neon gratuito hiberna quando fica parado; a primeira conexão pode falhar enquanto ele acorda. */
+async function connectDatabase() {
+    for (let attempt = 1; ; attempt++) {
+        try {
+            return await prisma.$connect();
+        } catch (err: any) {
+            if (attempt >= 10) throw err;
+            console.error(`[worker] banco indisponível (tentativa ${attempt}/10); nova tentativa em ${CONNECT_RETRY_MS / 1000}s`);
+            await new Promise((r) => setTimeout(r, CONNECT_RETRY_MS));
+        }
+    }
+}
+
 async function main() {
-    await prisma.$connect();
+    await connectDatabase();
     await start();
 
     const shutdown = async () => {
